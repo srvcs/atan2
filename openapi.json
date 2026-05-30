@@ -1,0 +1,131 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "srvcs-atan2",
+    "description": "",
+    "license": {
+      "name": "Apache-2.0",
+      "identifier": "Apache-2.0"
+    },
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [],
+        "summary": "`GET /` — service identity (srvcs service standard).",
+        "operationId": "index",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Info"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [],
+        "summary": "`POST /` — compute `atan2(y, x)`.",
+        "description": "Input validation for both operands is delegated to `srvcs-isnumber` over HTTP\n(the single source of truth for \"is this a number\"), once per operand. Both\nintegers and floats are valid input — this is a floating-point service. If\nthe dependency is unreachable, this service reports itself degraded rather\nthan guessing.",
+        "operationId": "evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Atan2Response"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "an operand is not a number"
+          },
+          "500": {
+            "description": "an operand passed validation but is not representable as a number"
+          },
+          "503": {
+            "description": "a dependency is unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Atan2Response": {
+        "type": "object",
+        "required": [
+          "y",
+          "x",
+          "result"
+        ],
+        "properties": {
+          "result": {
+            "type": "number",
+            "format": "double"
+          },
+          "x": {
+            "type": "object"
+          },
+          "y": {
+            "type": "object"
+          }
+        }
+      },
+      "EvalRequest": {
+        "type": "object",
+        "required": [
+          "y",
+          "x"
+        ],
+        "properties": {
+          "x": {
+            "type": "object"
+          },
+          "y": {
+            "type": "object"
+          }
+        }
+      },
+      "Info": {
+        "type": "object",
+        "required": [
+          "service",
+          "concern",
+          "depends_on"
+        ],
+        "properties": {
+          "concern": {
+            "type": "string"
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "service": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

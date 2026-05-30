@@ -1,0 +1,10 @@
+# Rust
+/target
+**/*.rs.bk
+
+# Nix
+result
+result-*
+.direnv/
+oci-image.tar
+image.tar.gz
